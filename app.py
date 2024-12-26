@@ -1,11 +1,11 @@
-# ファイル名: app.py
-
 from flask import Flask, request, jsonify
 import os
 import subprocess
 import platform
+from flask_cors import CORS  # CORSのインポート
 
 app = Flask(__name__)
+CORS(app)  # CORSを適用
 
 # デフォルトで開くディレクトリ
 DEFAULT_DIRECTORY = r"C:\Users"
