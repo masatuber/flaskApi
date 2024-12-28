@@ -5,7 +5,7 @@ import platform
 from flask_cors import CORS  # CORSのインポート
 
 app = Flask(__name__)
-CORS(app)  # CORSを適用
+CORS(app,  resources={r"/open-explorer": {"origins": "*"}})  # CORSを適用
 
 # デフォルトで開くディレクトリ
 DEFAULT_DIRECTORY = r"C:\Users"
@@ -25,6 +25,7 @@ def open_directory(directory):
 
 @app.route('/open-explorer', methods=['POST', 'GET'])
 def open_explorer():
+
     """
     ディレクトリをエクスプローラで開くAPI
     POST: JSONボディでディレクトリを指定
