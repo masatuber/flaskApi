@@ -4,28 +4,30 @@ import subprocess
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-# Flaskアプリケーションの初期化
 app = Flask(__name__)
-
-# CORSを有効化（すべてのオリジンを許可）
 CORS(app)
 
 @app.route('/open-explorer', methods=['POST'])
 def open_explorer():
     try:
-        # リクエストからディレクトリパスを取得
-        directory = request.json.get('directory', 'C:\\Users')
+        # JSONデータを取得
+        data = request.get_json()
+        if not data or 'directory' not in data:
+            return jsonify({'error': 'Missing "directory" in request JSON'}), 400
 
-        # ディレクトリが存在するかチェック
+        # ディレクトリパスを取得
+        directory = data.get('directory', 'C:\\Users')
+
+        # ディレクトリの存在確認
         if not os.path.isdir(directory):
-            return jsonify({'error': 'Invalid directory path'}), 400
+            return jsonify({'error': f'Invalid directory path: {directory}'}), 400
 
         # OSに応じてエクスプローラーを開く
         if platform.system() == "Windows":
             subprocess.run(["explorer", directory], check=True)
-        elif platform.system() == "Darwin":  # macOSの場合
+        elif platform.system() == "Darwin":  # macOS
             subprocess.run(["open", directory], check=True)
-        else:  # Linuxの場合
+        else:  # Linux
             subprocess.run(["xdg-open", directory], check=True)
 
         return jsonify({'status': f'Explorer opened at {directory}'}), 200
@@ -34,6 +36,5 @@ def open_explorer():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-
-    # Flaskサーバーをデバッグモードで起動
+ # Flaskサーバーをデバッグモードで起動
     app.run(host='0.0.0.0', port=5000, debug=True)
